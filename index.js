@@ -1,6 +1,6 @@
-// Convert a var declaration to const or let where appropriate.
-// Convert a promise-based function (a function call with .then) to instead use async and await.
-// Convert a function declaration into a arrow function.
+// Convert a var declaration to const or let where appropriate. DONE
+// Convert a promise-based function (a function call with .then) to instead use async and await. DONE
+// Convert a function declaration into a arrow function. DONE
 // Convert string concatenation to instead use template literals and string interpolation.
 // Convert some object-related code to use ES6 destructuring.
 
@@ -8,64 +8,68 @@ const form = document.querySelector("form");
 const section = document.getElementById("weather");
 
 //get the data from open weather map
-const url =
-  "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=61ac71fca852832313e86693bf383076&q=";
+const url = `https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=61ac71fca852832313e86693bf383076&q=`;
 
 form.onsubmit = async (e) => {
-  e.preventDefault()
-  const city = form.search.value
+  e.preventDefault();
+  const city = form.search.value;
   try {
-    const res = await fetch(url + city)
-    const data = await res.json()
-    displayWeather(data)
-  } catch(err) {
-    const wrong = document.createElement("h2");
+    const res = await fetch(url + city);
+    const data = await res.json();
+    displayWeather(data);
+  } catch (err) {
+    const wrong = document.createElement(`h2`);
     wrong.textContent = "Location not found";
     section.appendChild(wrong);
   }
-}
+};
 
-const displayWeather = data => {
+const displayWeather = (data) => {
   form.reset();
   section.innerHTML = "";
-  console.log(data.name);
-  console.log(data.sys.country);
-
+  console.log(data);
+  //Destructuring
+  const {
+    name,
+    sys: { country },
+    coord: { lat, lon },
+    weather: [{ icon, description }],
+    main: { temp, feels_like },
+  } = data;
   //Create the H2
   const h2 = document.createElement("h2");
-  h2.textContent = data.name + ", " + data.sys.country;
+  //template literal string interpolation
+  h2.textContent = `${name}, ${country}`;
   section.appendChild(h2);
 
   //Create the a href to google maps
   const a = document.createElement("a");
   a.textContent = "Click to view map";
-  a.href =
-    "https://www.google.com/maps/search/?api=1&query=" +
-    data.coord.lat +
-    "," +
-    data.coord.lon;
+  //template literal string interpolation
+  a.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
   section.appendChild(a);
 
   //Create weather icon
-  const icon = document.createElement("img");
-  icon.src =
-    "https://openweathermap.org/img/wn/" + data.weather[0].icon + "@2x.png";
-  section.appendChild(icon);
+  const img = document.createElement("img");
+  //template literal string interpolation
+  img.src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+  section.appendChild(img);
 
   //Create description
-  const description = document.createElement("p");
-  description.textContent = data.weather[0].description;
-  description.style.textTransform = "capitalize";
-  section.appendChild(description);
+  const desc = document.createElement("p");
+  desc.textContent = description;
+  desc.style.textTransform = "capitalize";
+  section.appendChild(desc);
 
   //Create actual like
-  const temp = document.createElement("p");
-  temp.textContent = "Current: " + data.main.temp;
-  section.appendChild(temp);
+  const temperature = document.createElement("p");
+  //template literal string interpolation
+  temperature.textContent = `Current: ${temp}`;
+  section.appendChild(temperature);
 
   //Create feel like
   const feelTemp = document.createElement("p");
-  feelTemp.textContent = "Feels like: " + data.main.feels_like;
+  feelTemp.textContent = `Feels like: ${feels_like}`;
   section.appendChild(feelTemp);
 
   //Create Time
@@ -75,6 +79,6 @@ const displayWeather = data => {
     hour: "numeric",
     minute: "2-digit",
   });
-  timeCollect.textContent = "Last updated: " + timeString;
+  timeCollect.textContent = `Last updated: " ${timeString};`
   section.appendChild(timeCollect);
-}
+};
