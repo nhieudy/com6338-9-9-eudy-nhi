@@ -1,9 +1,8 @@
-
-    // Convert a var declaration to const or let where appropriate.
-    // Convert a promise-based function (a function call with .then) to instead use async and await.
-    // Convert a function declaration into a arrow function.
-    // Convert string concatenation to instead use template literals and string interpolation.
-    // Convert some object-related code to use ES6 destructuring.
+// Convert a var declaration to const or let where appropriate.
+// Convert a promise-based function (a function call with .then) to instead use async and await.
+// Convert a function declaration into a arrow function.
+// Convert string concatenation to instead use template literals and string interpolation.
+// Convert some object-related code to use ES6 destructuring.
 
 const form = document.querySelector("form");
 const section = document.getElementById("weather");
@@ -11,25 +10,22 @@ const section = document.getElementById("weather");
 //get the data from open weather map
 const url =
   "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=61ac71fca852832313e86693bf383076&q=";
-form.onsubmit = function (e) {
-  e.preventDefault();
-  const city = this.search.value;
-  fetch(url + city)
-    .then(function (res) {
-      return res.json();
-    })
-    .then(function (data) {
-      displayWeather(data);
-      console.log(data);
-    })
-    .catch(function (err) {
-      const wrong = document.createElement("h2");
-      wrong.textContent = "Location not found";
-      section.appendChild(wrong);
-    });
-};
 
-function displayWeather(data) {
+form.onsubmit = async (e) => {
+  e.preventDefault()
+  const city = form.search.value
+  try {
+    const res = await fetch(url + city)
+    const data = await res.json()
+    displayWeather(data)
+  } catch(err) {
+    const wrong = document.createElement("h2");
+    wrong.textContent = "Location not found";
+    section.appendChild(wrong);
+  }
+}
+
+const displayWeather = data => {
   form.reset();
   section.innerHTML = "";
   console.log(data.name);
